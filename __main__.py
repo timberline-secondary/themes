@@ -2,8 +2,6 @@ import os.path
 import pygame
 
 
-# import vlc
-
 def find(name):
     if os.path.exists(f"./songs/{name}.mp3"):
         print("File exists.\n")
