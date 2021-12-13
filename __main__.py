@@ -10,18 +10,19 @@ def find(name):
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy():
             continue
-        main()
+        return
     else:
         print(f"No file found @ ./songs/{name}.mp3\n")
-        main()
+        return
 
 
 def main():
-    print("Please enter the code:")
+    while True:
+        print("Please enter the code:")
 
-    code = input()
+        code = input()
 
-    find(code)
+        find(code)
 
 
 main()
