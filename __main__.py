@@ -7,6 +7,7 @@ load_dotenv()
 THEMEPATH = os.getenv('THEMEPATH')
 BYPASS = os.getenv('BYPASS')
 
+
 def find(name):
     if os.path.exists(f"{THEMEPATH}{name}.mp3"):
         print("File exists.\n")
