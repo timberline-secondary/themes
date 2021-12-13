@@ -8,6 +8,7 @@ def find(name):
         pygame.mixer.init()
         pygame.mixer.music.load(f"./songs/{name}.mp3")
         pygame.mixer.music.play()
+        # !! Need to test how loud, if too loud use pygame.mixer.set_volume(float)
         while pygame.mixer.music.get_busy():
             continue
         return
