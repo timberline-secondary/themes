@@ -1,6 +1,8 @@
 import os.path
 import pygame
+from dotenv import load_dotenv
 
+load_dotenv()
 
 THEMEPATH = os.getenv('THEMEPATH')
 BYPASS = os.getenv('BYPASS')
