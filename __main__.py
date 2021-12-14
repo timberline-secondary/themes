@@ -11,6 +11,7 @@ BYPASS = os.getenv('BYPASS')
 bypass = {"state": False}
 latest = {}
 
+
 def find(name):
     if name == BYPASS:
         bypass["state"] = not bypass["state"]
