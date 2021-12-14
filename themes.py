@@ -4,36 +4,37 @@ from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
 
-class ThemePlayer():
+class ThemePlayer:
 
     def __init__(self, spamblock_time, theme_path, spamblock_pw):
-        self.theme_path = theme_path
-        self.spamblock_pw = spamblock_pw
+        self.theme_path: str = theme_path
+        self.spamblock_pw: str = spamblock_pw  # str as int
         self.spamblock_time = spamblock_time
-        self.waiting_for_spamblock_minutes_entry = False
-        self.latest = {}
+        self.waiting_for_spamblock_minutes_entry: bool = False
+        self.latest = {}  # dict containing {"code": time}
 
     def find(self, value):
 
         if self.waiting_for_spamblock_minutes_entry:
             self.spamblock_time = value
             print(f"Spam block is now set to {self.spamblock_time}")
-            waiting_for_spamblock_minutes_entry = False
+            self.waiting_for_spamblock_minutes_entry = False
             return
 
         if value == self.spamblock_pw:  # if the code entered is the spamblock password
-            waiting_for_spamblock_minutes_entry = True
+            self.waiting_for_spamblock_minutes_entry = True
             return
-            
+
         if os.path.exists(f"{self.theme_path}{value}.mp3"):  # if the file exists
             print("File exists.\n")
-            if not self.spamblock_time and value in self.latest and self.latest[value] + timedelta(
+            if value in self.latest and self.latest[value] + timedelta(
                     minutes=int(self.spamblock_time)) > datetime.now():
                 print(f"{value} is too recent.")
                 return
             pygame.mixer.music.load(f"{self.theme_path}{value}.mp3")
             pygame.mixer.music.play()
             self.latest[value] = datetime.now()
+            print(self.latest)
 
             # !! Need to test how loud, if too loud use pygame.mixer.set_volume(float)
             while pygame.mixer.music.get_busy():
@@ -42,7 +43,6 @@ class ThemePlayer():
         else:
             print(f"File '{value}.mp3' not found.\n")
             return
-
 
     def run(self):
         pygame.mixer.init()
@@ -57,7 +57,6 @@ class ThemePlayer():
 
 
 if __name__ == "__main__":
-    
     load_dotenv()
 
     THEME_PATH = os.getenv('THEME_PATH')
