@@ -34,8 +34,6 @@ class ThemePlayer:
             pygame.mixer.music.load(f"{self.theme_path}{value}.mp3")
             pygame.mixer.music.play()
             self.latest[value] = datetime.now()
-            print(self.latest)
-
             # !! Need to test how loud, if too loud use pygame.mixer.set_volume(float)
             while pygame.mixer.music.get_busy():
                 continue
