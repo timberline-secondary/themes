@@ -10,44 +10,72 @@ class ThemePlayer:
         self.theme_path: str = theme_path
         self.spamblock_pw: str = spamblock_pw  # str as int
         self.spamblock_time = spamblock_time
-        self.waiting_for_spamblock_minutes_entry: bool = False
-        self.latest = {}  # dict containing {"code": time}
 
-    def find(self, value):
+        self.waiting_for_spamblock_minutes_entry : bool = False
+        self.last_played = {} # dict containing {"code": time_last_played}
+
+
+    def find(self, code):
+        """ 
+        Manages input values by first checking if the value is a special command, 
+        if not, then check if the value matches the name of an mp3 file in self.theme_path
+        """
 
         if self.waiting_for_spamblock_minutes_entry:
-            self.spamblock_time = value
+            self.spamblock_time = code
             print(f"Spam block is now set to {self.spamblock_time}")
             self.waiting_for_spamblock_minutes_entry = False
             return
 
-        if value == self.spamblock_pw:  # if the code entered is the spamblock password
-            self.waiting_for_spamblock_minutes_entry = True
+        if code == self.spamblock_pw:  # if the code entered is the spamblock password
+            waiting_for_spamblock_minutes_entry = True
             return
 
-        if os.path.exists(f"{self.theme_path}{value}.mp3"):  # if the file exists
-            print("File exists.\n")
-            if value in self.latest and self.latest[value] + timedelta(
-                    minutes=int(self.spamblock_time)) > datetime.now():
-                print(f"{value} is too recent.")
-                return
-            pygame.mixer.music.load(f"{self.theme_path}{value}.mp3")
-            pygame.mixer.music.play()
-            self.latest[value] = datetime.now()
-            # !! Need to test how loud, if too loud use pygame.mixer.set_volume(float)
-            while pygame.mixer.music.get_busy():
-                continue
-            return
+        filepath = f"{self.theme_path}{code}.mp3"
+        if os.path.exists(filepath):  # if the file exists
+            print(f"Found {filepath}")
+            if not self.is_spamblocked(code):
+                self.last_played[code] = datetime.now()
+                self.play(filepath)
+
         else:
-            print(f"File '{value}.mp3' not found.\n")
-            return
+            print(f"File '{code}.mp3' not found.\n")
+        
+
+    def is_spamblocked(self, code):
+        """ If the code was last played within the spamblock time, return True."""
+        spam_delta = timedelta(minutes=int(self.spamblock_time))
+
+        try:
+            spam_block_time_remaining = self.last_played[code] + spam_delta - datetime.now()
+            if spam_block_time_remaining.seconds > 0:
+                print(f"Not gonna play! Spamblocker time remaining (hh:mm:ss): {spam_block_time_remaining}" )
+                return True
+            else:
+                return False
+        except KeyError: # Code has never been played before, so doesn't have a key in the last_played dictionary
+            return False
+
+
+    def play(self, filepath):
+        """ 
+        Play the song.  Don't return the method until the song is finished playing.
+        Assumes the filepath exists as a playable mp3 file.
+        """
+        pygame.mixer.music.load(filepath)
+        pygame.mixer.music.play()
+        
+        # !! Need to test how loud, if too loud use pygame.mixer.set_volume(float)
+        while pygame.mixer.music.get_busy():
+            continue
+
 
     def run(self):
         pygame.mixer.init()
         pygame.mixer.music.load("./start.mp3")
         pygame.mixer.music.play()
         while True:
-            print("Please enter the code:")
+            print("Please enter a code:")
 
             code = input("> ")
 
