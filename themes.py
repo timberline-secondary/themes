@@ -9,7 +9,7 @@ THEME_PATH = os.getenv('THEME_PATH')
 SPAMBLOCK_PASSWORD = os.getenv('SPAMBLOCK_PASSWORD')
 DEFAULT_SPAMBLOCK = os.getenv('DEFAULT_SPAMBLOCK')
 
-spamblock = {"time": "30", "waiting": False}
+spamblock = {"time": DEFAULT_SPAMBLOCK, "waiting": False}
 latest = {}
 
 
@@ -25,7 +25,7 @@ def find(name):
     if os.path.exists(f"{THEME_PATH}{name}.mp3"):  # if the file exists
         print("File exists.\n")
         if not spamblock["time"] and name in latest and latest[name] + timedelta(
-                minutes=int(DEFAULT_SPAMBLOCK)) > datetime.now():
+                minutes=int(spamblock["time"])) > datetime.now():
             print(f"{name} is too recent.")
             return
         pygame.mixer.music.load(f"{THEME_PATH}{name}.mp3")
