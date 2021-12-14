@@ -11,9 +11,8 @@ class ThemePlayer:
         self.spamblock_pw: str = spamblock_pw  # str as int
         self.spamblock_time = spamblock_time
 
-        self.waiting_for_spamblock_minutes_entry : bool = False
-        self.last_played = {} # dict containing {"code": time_last_played}
-
+        self.waiting_for_spamblock_minutes_entry: bool = False
+        self.last_played = {}  # dict containing {"code": time_last_played}
 
     def find(self, code):
         """ 
@@ -28,7 +27,7 @@ class ThemePlayer:
             return
 
         if code == self.spamblock_pw:  # if the code entered is the spamblock password
-            waiting_for_spamblock_minutes_entry = True
+            self.waiting_for_spamblock_minutes_entry = True
             return
 
         filepath = f"{self.theme_path}{code}.mp3"
@@ -40,7 +39,6 @@ class ThemePlayer:
 
         else:
             print(f"File '{code}.mp3' not found.\n")
-        
 
     def is_spamblocked(self, code):
         """ If the code was last played within the spamblock time, return True."""
@@ -48,27 +46,26 @@ class ThemePlayer:
 
         try:
             spam_block_time_remaining = self.last_played[code] + spam_delta - datetime.now()
-            if spam_block_time_remaining.seconds > 0:
-                print(f"Not gonna play! Spamblocker time remaining (hh:mm:ss): {spam_block_time_remaining}" )
+            if spam_block_time_remaining.days > -1:
+                print(f"Not gonna play! Spamblocker time remaining (hh:mm:ss): {spam_block_time_remaining}")
                 return True
             else:
                 return False
-        except KeyError: # Code has never been played before, so doesn't have a key in the last_played dictionary
+        except KeyError:  # Code has never been played before, so doesn't have a key in the last_played dictionary
             return False
 
-
-    def play(self, filepath):
-        """ 
+    @staticmethod
+    def play(filepath):
+        """
         Play the song.  Don't return the method until the song is finished playing.
         Assumes the filepath exists as a playable mp3 file.
         """
         pygame.mixer.music.load(filepath)
         pygame.mixer.music.play()
-        
+
         # !! Need to test how loud, if too loud use pygame.mixer.set_volume(float)
         while pygame.mixer.music.get_busy():
             continue
-
 
     def run(self):
         pygame.mixer.init()
