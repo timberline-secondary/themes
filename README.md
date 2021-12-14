@@ -3,7 +3,7 @@
 
 ### Instructions:
 
-Ensure that the pi is running at least v3.5 Python.
+Ensure that the pi is running at least v3.9 Python.
 
 if it is then continue with the following commands:
 
