@@ -46,7 +46,7 @@ class ThemePlayer:
 
         else:
             if self.error_noise_on:
-                pygame.mixer.music.load('./not_found.mp3')
+                pygame.mixer.music.load('./media/not_found.mp3')
                 pygame.mixer.music.play()
 
             print(f"File '{code}.mp3' not found.\n")
@@ -59,7 +59,7 @@ class ThemePlayer:
             spam_block_time_remaining = self.last_played[code] + spam_delta - datetime.now()
             if spam_block_time_remaining.days > -1:
                 if self.error_noise_on:
-                    pygame.mixer.music.load('./spamblock.mp3')
+                    pygame.mixer.music.load('./media/spamblock.mp3')
                     pygame.mixer.music.play()
                 print(f"Not gonna play! Spamblocker time remaining (hh:mm:ss): {spam_block_time_remaining}")
                 return True
@@ -83,7 +83,7 @@ class ThemePlayer:
 
     def run(self):
         pygame.mixer.init(buffer=1024)
-        pygame.mixer.music.load("./start.mp3")
+        pygame.mixer.music.load("./media/start.mp3")
         pygame.mixer.music.play()
         while True:
             print("Please enter a code:")
