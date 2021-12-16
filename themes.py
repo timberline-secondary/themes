@@ -1,4 +1,5 @@
 import os.path
+import sys
 import pygame
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
@@ -19,6 +20,9 @@ class ThemePlayer:
         Manages input values by first checking if the value is a special command, 
         if not, then check if the value matches the name of an mp3 file in self.theme_path
         """
+
+        if code == "exit":
+            sys.exit()
 
         if self.waiting_for_spamblock_minutes_entry:
             self.spamblock_time = code
