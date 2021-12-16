@@ -12,7 +12,6 @@ class ThemePlayer:
         self.spamblock_pw: str = spamblock_pw  # str as int
         self.spamblock_time = spamblock_time
 
-        self.waiting_for_spamblock_minutes_entry: bool = False
         self.last_played = {}  # dict containing {"code": time_last_played}
 
     def find(self, code):
@@ -24,14 +23,12 @@ class ThemePlayer:
         if code == "exit":
             sys.exit()
 
-        if self.waiting_for_spamblock_minutes_entry:
-            self.spamblock_time = code
-            print(f"Spam block is now set to {self.spamblock_time}")
-            self.waiting_for_spamblock_minutes_entry = False
-            return
-
         if code == self.spamblock_pw:  # if the code entered is the spamblock password
-            self.waiting_for_spamblock_minutes_entry = True
+            print("Please the time in minutes:")
+
+            time_inputted = input("> ")
+            self.spamblock_time = time_inputted
+            print(f"Spam block is now set to {time_inputted}")
             return
 
         filepath = f"{self.theme_path}/{code}.mp3"
