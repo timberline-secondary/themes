@@ -30,7 +30,7 @@ class ThemePlayer:
             self.waiting_for_spamblock_minutes_entry = True
             return
 
-        filepath = f"{self.theme_path}{code}.mp3"
+        filepath = f"{self.theme_path}/{code}.mp3"
         if os.path.exists(filepath):  # if the file exists
             print(f"Found {filepath}")
             if not self.is_spamblocked(code):
