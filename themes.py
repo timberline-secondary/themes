@@ -7,11 +7,13 @@ from datetime import datetime, timedelta
 
 class ThemePlayer:
 
-    def __init__(self, spamblock_time, theme_path, spamblock_pw):
+    def __init__(self, spamblock_time, theme_path, spamblock_pw, error_sfx_pw):
         self.theme_path: str = theme_path
         self.spamblock_pw: str = spamblock_pw  # str as int
+        self.error_sfx_pw: str = error_sfx_pw
         self.spamblock_time = spamblock_time
 
+        self.error_noise_on: bool = True
         self.last_played = {}  # dict containing {"code": time_last_played}
 
     def find(self, code):
@@ -22,6 +24,10 @@ class ThemePlayer:
 
         if code == "exit":
             sys.exit()
+
+        if code == self.error_sfx_pw:
+            self.error_noise_on = not self.error_noise_on
+            return
 
         if code == self.spamblock_pw:  # if the code entered is the spamblock password
             print("Please the time in minutes:")
@@ -39,6 +45,10 @@ class ThemePlayer:
                 self.play(filepath)
 
         else:
+            if self.error_noise_on:
+                pygame.mixer.music.load('./not_found.mp3')
+                pygame.mixer.music.play()
+
             print(f"File '{code}.mp3' not found.\n")
 
     def is_spamblocked(self, code):
@@ -48,6 +58,9 @@ class ThemePlayer:
         try:
             spam_block_time_remaining = self.last_played[code] + spam_delta - datetime.now()
             if spam_block_time_remaining.days > -1:
+                if self.error_noise_on:
+                    pygame.mixer.music.load('./spamblock.mp3')
+                    pygame.mixer.music.play()
                 print(f"Not gonna play! Spamblocker time remaining (hh:mm:ss): {spam_block_time_remaining}")
                 return True
             else:
@@ -85,7 +98,8 @@ if __name__ == "__main__":
 
     THEME_PATH = os.getenv('THEME_PATH')
     SPAMBLOCK_PASSWORD = os.getenv('SPAMBLOCK_PASSWORD')
+    ERROR_SFX_PASSWORD = os.getenv('ERROR_SFX_PASSWORD')
     DEFAULT_SPAMBLOCK = os.getenv('DEFAULT_SPAMBLOCK')
 
-    player = ThemePlayer(DEFAULT_SPAMBLOCK, THEME_PATH, SPAMBLOCK_PASSWORD)
+    player = ThemePlayer(DEFAULT_SPAMBLOCK, THEME_PATH, SPAMBLOCK_PASSWORD, ERROR_SFX_PASSWORD)
     player.run()
