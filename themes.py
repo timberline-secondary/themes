@@ -72,7 +72,7 @@ class ThemePlayer:
             continue
 
     def run(self):
-        pygame.mixer.init()
+        pygame.mixer.init(buffer=1024)
         pygame.mixer.music.load("./start.mp3")
         pygame.mixer.music.play()
         while True:
