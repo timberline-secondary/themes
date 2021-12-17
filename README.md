@@ -1,18 +1,25 @@
 
-# themes
+# Entrance Theme Machine!
+## Operating System and Dependancies
 
-### Instructions:
+1. Raspberry Pi OS Lite (no desktop)
+1. Config the pi: `sudo raspi-config`:
+   - set hostname to `pi-themes`, 
+   - turn on ssh server, 
+   - etc.
+1. Dependancies: `sudo apt install ntp git espeak python3-pip neofetch`
+1. Ensure that the pi is running at least v3.9 Python: `python -V`
 
-Ensure that the pi is running at least v3.9 Python.
+## Installing the Entrance Theme Player:
 
-if it is then continue with the following commands:
-
-```bash
-git pull https://github.com/timberline-secondary/themes
-```
-
-### Bootup:
-
-all of the bootup commands are kept in `startthemes.sh` in `~` (/home/pi).
-
-`startthemes.sh` will enter into `startup.sh` in the /themes dir (this repo) and it will run the commands in that file to start the program.
+1. Clone the repo:  
+`git clone https://github.com/timberline-secondary/themes.git`
+1. `pip install -r requirements.txt`
+1. Run the Entrance Theme Machine on startup by adding this code to the bottom of `/home/pi/.bashrc`:  
+    ```
+    # if not an ssh connection, then run the Entrance Theme Machine!
+    if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ]; then
+    cd /home/pi/themes && sh startup.sh
+    fi
+    ```
+1. Reboot the pi and listen for the startup sound!
