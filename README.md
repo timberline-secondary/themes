@@ -14,7 +14,10 @@
 
 1. Clone the repo:  
 `git clone https://github.com/timberline-secondary/themes.git`
-1. `pip install -r requirements.txt`
+1. `cd themes && pip install -r requirements.txt`
+1. Setup environment variables:  
+   `cp .env.example .env`
+1. Edit the `.env` file with desired values
 1. Run the Entrance Theme Machine on startup by adding this code to the bottom of `/home/pi/.bashrc`:  
     ```
     # if not an ssh connection, then run the Entrance Theme Machine!
