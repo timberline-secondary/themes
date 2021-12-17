@@ -23,13 +23,14 @@ class ThemePlayer:
         if code == self.error_sfx_pw:
             self.error_noise_on = not self.error_noise_on
             return
-
-        if code == self.spamblock_pw:  # if the code entered is the spamblock password
+        elif code == self.spamblock_pw:  # if the code entered is the spamblock password
             print("Please the time in minutes:")
 
             time_inputted = input("> ")
             self.spamblock_time = time_inputted
             print(f"Spam block is now set to {time_inputted}")
+            return
+        else:
             return
 
     def find(self, code):
