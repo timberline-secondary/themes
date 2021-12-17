@@ -43,6 +43,7 @@ class ThemePlayer:
 
         if code[0] == "*":
             self.execute_admin_code(code)
+            return
 
         filepath = f"{self.theme_path}/{code}.mp3"
         if os.path.exists(filepath):  # if the file exists
