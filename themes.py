@@ -40,10 +40,10 @@ class ThemePlayer:
 
             try:
                 spam_block_time_remaining = self.last_played[song_queried] + spam_delta - datetime.now()
-                spam_block_time_remaining.minutes = math.ceil(spam_block_time_remaining.total_seconds() / 60)
+                minutes = math.ceil(spam_block_time_remaining.total_seconds() / 60)
                 if spam_block_time_remaining.days > -1:
                     os.system(
-                        f"espeak -a 200 '{spam_block_time_remaining.minutes if spam_block_time_remaining.minutes > 0 else spam_block_time_remaining.seconds} {'minutes' if spam_block_time_remaining.minutes > 0 else 'seconds'}' 2>/dev/null")
+                        f"espeak -a 200 '{minutes if minutes > 0 else spam_block_time_remaining.seconds} {'minutes' if minutes > 0 else 'seconds'}' 2>/dev/null")
                     print(f"Spamblocker time remaining (hh:mm:ss): {spam_block_time_remaining}")
                     return
                 else:
