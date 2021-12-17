@@ -16,15 +16,10 @@ class ThemePlayer:
         self.error_noise_on: bool = True
         self.last_played = {}  # dict containing {"code": time_last_played}
 
-    def find(self, code):
-        """ 
-        Manages input values by first checking if the value is a special command, 
-        if not, then check if the value matches the name of an mp3 file in self.theme_path
+    def execute_admin_code(self, code):
         """
-
-        if code == "exit":
-            sys.exit()
-
+        Handles the admin codes that are entered into the theme player.
+        """
         if code == self.error_sfx_pw:
             self.error_noise_on = not self.error_noise_on
             return
@@ -36,6 +31,18 @@ class ThemePlayer:
             self.spamblock_time = time_inputted
             print(f"Spam block is now set to {time_inputted}")
             return
+
+    def find(self, code):
+        """ 
+        Manages input values by first checking if the value is a special command, 
+        if not, then check if the value matches the name of an mp3 file in self.theme_path
+        """
+
+        if code == "exit":
+            sys.exit()
+
+        if code[0] == "*":
+            self.execute_admin_code(code)
 
         filepath = f"{self.theme_path}/{code}.mp3"
         if os.path.exists(filepath):  # if the file exists
