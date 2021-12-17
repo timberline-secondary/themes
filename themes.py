@@ -7,11 +7,12 @@ from datetime import datetime, timedelta
 
 class ThemePlayer:
 
-    def __init__(self, spamblock_time, theme_path, spamblock_pw, error_sfx_pw):
+    def __init__(self, spamblock_time, theme_path, spamblock_pw, error_sfx_pw, spamblock_time_remaining_pw):
         self.theme_path: str = theme_path
         self.spamblock_pw: str = spamblock_pw  # str as int
         self.error_sfx_pw: str = error_sfx_pw
         self.spamblock_time = spamblock_time
+        self.spamblock_remaining_pw = spamblock_time_remaining_pw
 
         self.error_noise_on: bool = True
         self.last_played = {}  # dict containing {"code": time_last_played}
@@ -30,6 +31,25 @@ class ThemePlayer:
             self.spamblock_time = time_inputted
             print(f"Spam block is now set to {time_inputted}")
             return
+        elif code == self.spamblock_remaining_pw:
+            print("Please enter the song you wish to query:")
+
+            song_queried = input("> ")
+            spam_delta = timedelta(minutes=int(self.spamblock_time))
+
+            try:
+                spam_block_time_remaining = self.last_played[song_queried] + spam_delta - datetime.now()
+                if spam_block_time_remaining.days > -1:
+                    os.system(
+                        f"espeak -a 200 '{spam_block_time_remaining.minutes if spam_block_time_remaining.minutes > 0 else spam_block_time_remaining.seconds} {'minutes' if spam_block_time_remaining.minutes > 0 else 'seconds'}' 2>/dev/null")
+                    print(f"Spamblocker time remaining (hh:mm:ss): {spam_block_time_remaining}")
+                    return
+                else:
+                    print("Not blocked.")
+                    return
+            except KeyError:  # Code has never been played before, so doesn't have a key in the last_played dictionary
+                print("Never played.")
+                return
         else:
             return
 
@@ -109,6 +129,8 @@ if __name__ == "__main__":
     SPAMBLOCK_PASSWORD = os.getenv('SPAMBLOCK_PASSWORD')
     ERROR_SFX_PASSWORD = os.getenv('ERROR_SFX_PASSWORD')
     DEFAULT_SPAMBLOCK = os.getenv('DEFAULT_SPAMBLOCK')
+    CHECK_SPAM_TIME_PASSWORD = os.getenv('CHECK_SPAM_TIME_PASSWORD')
 
-    player = ThemePlayer(DEFAULT_SPAMBLOCK, THEME_PATH, SPAMBLOCK_PASSWORD, ERROR_SFX_PASSWORD)
+    player = ThemePlayer(DEFAULT_SPAMBLOCK, THEME_PATH, SPAMBLOCK_PASSWORD, ERROR_SFX_PASSWORD,
+                         CHECK_SPAM_TIME_PASSWORD)
     player.run()
