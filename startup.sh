@@ -19,4 +19,3 @@ if ! git diff --exit-code --quiet requirements.txt; then
 fi
 
 echo "Finally starting!  You should hear the startup sound."
-python themes.py
