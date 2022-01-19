@@ -22,7 +22,7 @@
     ```
     # if not an ssh connection, then run the Entrance Theme Machine!
     if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ]; then
-    cd /home/pi/themes && sh startup.sh
+    cd /home/pi/themes && sh startup.sh && python themes.py
     fi
     ```
 1. Reboot the pi and listen for the startup sound!
