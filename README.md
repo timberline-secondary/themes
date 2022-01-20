@@ -14,15 +14,44 @@
 
 1. Clone the repo:  
 `git clone https://github.com/timberline-secondary/themes.git`
-1. `cd themes && pip install -r requirements.txt`
-1. Setup environment variables:  
+2. `cd themes && pip install -r requirements.txt`
+3. Setup environment variables:  
    `cp .env.example .env`
-1. Edit the `.env` file with desired values
-1. Run the Entrance Theme Machine on startup by adding this code to the bottom of `/home/pi/.bashrc`:  
+4. Edit the `.env` file with desired values
+5. Create a systemd service @ `/lib/systemd/system/themes.service` with the contents of:
+   ```bash
+   [Unit]
+   Description=Theme Player
+   After=multi-user.target
+   Conflicts=getty@tty1.service
+   
+   [Service]
+   Type=simple
+   # Restart=on-failure
+   # RestartSec=30
+   WorkingDirectory=/home/pi/themes
+   User=pi
+   ExecStart=/usr/bin/python themes.py
+   StandardInput=tty-force
+   
+   [Install]
+   WantedBy=multi-user.target
+   ```
+6. Update the permissions for the file with `sudo chmod 644 /lib/systemd/system/themes.service`
+7. Create the updater service @ `/lib/systemd/system/themes-updater.service` with the contents of:
+    ```bash
+    [Unit]
+   Description=Updater for Theme Player
+   Wants=network-online.target
+   After=network-online.target
+   
+   [Service]
+   Type=simple
+   ExecStart=/usr/bin/bash -c "cd /home/pi/themes && sh startup.sh"
+   
+   [Install]
+   WantedBy=multi-user.target
     ```
-    # if not an ssh connection, then run the Entrance Theme Machine!
-    if [ ! -n "$SSH_CLIENT" ] && [ ! -n "$SSH_TTY" ]; then
-    cd /home/pi/themes && sh startup.sh && python themes.py
-    fi
-    ```
-1. Reboot the pi and listen for the startup sound!
+8. Update the permissions for the file with `sudo chmod 644 /lib/systemd/system/themes-updater.service`
+9. Enable both service with the following commands: `systemctl enable themes` and `systemctl enable themes-updater`
+10. Reboot the pi and listen for the startup sound!
