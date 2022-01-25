@@ -61,6 +61,9 @@ class ThemePlayer:
         if not, then check if the value matches the name of an mp3 file in self.theme_path
         """
 
+        if code == "":
+            return
+
         if code == "exit":
             sys.exit()
 
