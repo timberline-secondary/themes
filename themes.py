@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 class ThemePlayer:
 
     def __init__(self, spamblock_time, theme_path, spamblock_pw, error_sfx_pw, spamblock_time_remaining_pw):
-        self.not_ssh_connection: bool = len(sys.argv) < 1
+        self.not_ssh_connection: bool = len(sys.argv) <= 1
 
         self.theme_path: str = theme_path
         self.spamblock_pw: str = spamblock_pw  # str as int
