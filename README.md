@@ -55,3 +55,33 @@
 8. Update the permissions for the file with `sudo chmod 644 /lib/systemd/system/themes-updater.service`
 9. Enable both service with the following commands: `systemctl enable themes` and `systemctl enable themes-updater`
 10. Reboot the pi and listen for the startup sound!
+
+## Disabling the NumLock Key:
+
+1. SSH into the Raspberry Pi
+2. Make sure console-setup is installed:
+   ```
+   sudo apt update
+   sudo apt install console-setup
+   ```
+3. Create a systemd service @ `/etc/systemd/system/disable-numlock.service` with the contents of:
+   ```bash
+   [Unit]
+   Description=Disable Num Lock key
+   After=local-fs.target
+
+   [Service]
+   Type=oneshot
+   ExecStart=/bin/sh -c 'echo "keycode 69 = VoidSymbol" | /usr/bin/loadkeys -'
+   RemainAfterExit=yes
+
+   [Install]
+   WantedBy = multi-user.target
+   ```
+4. Restart and confirm with:
+   ```
+   sudo systemctl daemon-reload
+   sudo systemctl restart disable-numlock.service
+   sudo systemctl status disable-numlock.service --no-pager
+   ```
+5. Feel free to reboot the pi and test but if `sudo systemctl status disable-numlock.service --no-pager` returns `active (exited)` it works.
