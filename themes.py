@@ -5,6 +5,18 @@ import pygame
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
+# Every key on the number pad can be in a code (0-9 . + - * /), and a code plays <code>.mp3.
+# But * and / can't be in a file name (/ is a folder, and USB sticks formatted for Windows
+# don't allow *), so those themes' file names have letters in their place: typing 2*2 plays
+# 2x2.mp3, and 3/4 plays 3d4.mp3. (The Hackerspace control panel names them this way.)
+# Codes starting with * are still admin codes.
+FILE_NAME_SWAPS = {"*": "x", "/": "d"}
+
+
+def file_name(code):
+    """The theme file a code plays: '2+2' -> '2+2.mp3', '2*2' -> '2x2.mp3'."""
+    return "".join(FILE_NAME_SWAPS.get(key, key) for key in code) + ".mp3"
+
 
 class ThemePlayer:
 
@@ -73,7 +85,7 @@ class ThemePlayer:
             self.execute_admin_code(code)
             return
 
-        filepath = f"{self.theme_path}/{code}.mp3"
+        filepath = os.path.join(self.theme_path, file_name(code))
         if os.path.exists(filepath):  # if the file exists
             print(f"Found {filepath}")
             if not self.is_spamblocked(code):
@@ -85,7 +97,7 @@ class ThemePlayer:
                 pygame.mixer.music.load('./media/not_found.mp3')
                 pygame.mixer.music.play()
 
-            print(f"File '{code}.mp3' not found.\n")
+            print(f"File '{file_name(code)}' not found.\n")
 
     def is_spamblocked(self, code):
         """ If the code was last played within the spamblock time, return True."""

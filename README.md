@@ -56,6 +56,21 @@
 9. Enable both service with the following commands: `systemctl enable themes` and `systemctl enable themes-updater`
 10. Reboot the pi and listen for the startup sound!
 
+## Codes and file names
+
+A code plays the file with that name in `THEME_PATH`: typing `0027` plays `0027.mp3`, and
+`2+2` plays `2+2.mp3`. Codes can use every key on the number pad (`0-9 . + - * /`), but `*`
+and `/` can't be in a file name (`/` is a folder, and USB sticks formatted for Windows don't
+allow `*`), so those are letters in the file name instead:
+
+| Key | In the file name | Example |
+| --- | --- | --- |
+| `*` | `x` | typing `2*2` plays `2x2.mp3` |
+| `/` | `d` | typing `3/4` plays `3d4.mp3` |
+
+Codes starting with `*` are admin codes, so they never play a theme. The Hackerspace control
+panel names new themes this way, and explains it when a code has `*` or `/` in it.
+
 ## Disabling the NumLock Key:
 
 1. SSH into the Raspberry Pi
