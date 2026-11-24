@@ -56,6 +56,16 @@
 9. Enable both service with the following commands: `systemctl enable themes` and `systemctl enable themes-updater`
 10. Reboot the pi and listen for the startup sound!
 
+## Updates
+
+Each time the Pi starts, `themes-updater` runs `startup.sh`, which gets the latest version from
+GitHub (`git pull`). The player (`themes`) starts at the same time and is usually already
+running by then, so if anything was updated, `startup.sh` restarts it to run the new version
+(you'll hear the startup sound twice). If `requirements.txt` changed, it also reinstalls the
+Python packages first. So after merging a change here, rebooting pi-themes is enough.
+
+To restart just the player by hand: `sudo systemctl restart themes`.
+
 ## Codes and file names
 
 A code plays the file with that name in `THEME_PATH`: typing `0027` plays `0027.mp3`, and
