@@ -66,6 +66,22 @@ Python packages first. So after merging a change here, rebooting pi-themes is en
 
 To restart just the player by hand: `sudo systemctl restart themes`.
 
+## Keypad log
+
+Every code typed is added to `keypad.log` next to `themes.py`, with the time and what happened:
+
+```
+2026-11-27 10:31:02  keypad  2*2           played 2x2.mp3
+2026-11-27 10:31:40  keypad  2*2           spam-blocked (5 more minutes)
+2026-11-27 10:32:15  keypad  9/9           not found (there's no 9d9.mp3)
+2026-11-27 10:35:00  keypad  (admin)       spam block set to 7 minutes
+```
+
+`keypad` is the entrance keypad; `ssh` is a copy of the player started over ssh (e.g. the
+control panel's *Play a theme*). Admin codes are never written down (they're the passwords in
+`.env`), only what they did. When it reaches 1 MB it's moved to `keypad.log.1`. Watch it live
+with `tail -f keypad.log`, or the control panel's *Watch the keypad*.
+
 ## Codes and file names
 
 A code plays the file with that name in `THEME_PATH`: typing `0027` plays `0027.mp3`, and

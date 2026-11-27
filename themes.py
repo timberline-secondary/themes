@@ -13,6 +13,13 @@ from datetime import datetime, timedelta
 FILE_NAME_SWAPS = {"*": "x", "/": "d"}
 
 
+# Every code typed is noted in keypad.log (next to this file), with the time and what
+# happened, so it can be watched live (e.g. from the Hackerspace control panel's "Watch the
+# keypad"). Admin codes are never written down: they're the passwords from .env.
+KEYPAD_LOG = os.path.join(os.path.dirname(os.path.abspath(__file__)), "keypad.log")
+MAX_LOG_BYTES = 1_000_000  # then it's moved to keypad.log.1 and a new one is started
+
+
 def file_name(code):
     """The theme file a code plays: '2+2' -> '2+2.mp3', '2*2' -> '2x2.mp3'."""
     return "".join(FILE_NAME_SWAPS.get(key, key) for key in code) + ".mp3"
@@ -31,6 +38,19 @@ class ThemePlayer:
 
         self.error_noise_on: bool = True
         self.last_played = {}  # dict containing {"code": time_last_played}
+        # where codes come from, for keypad.log: the keypad, or a copy started over ssh
+        self.source = "keypad" if self.not_ssh_connection else "ssh"
+
+    def log(self, code, what):
+        """Note a typed code, and what happened, in keypad.log. Never stops the player."""
+        try:
+            if os.path.exists(KEYPAD_LOG) and os.path.getsize(KEYPAD_LOG) > MAX_LOG_BYTES:
+                os.replace(KEYPAD_LOG, KEYPAD_LOG + ".1")
+            with open(KEYPAD_LOG, "a") as log_file:
+                log_file.write(f"{datetime.now():%Y-%m-%d %H:%M:%S}  {self.source:<6}  "
+                               f"{code:<12}  {what}\n")
+        except OSError:
+            pass
 
     def execute_admin_code(self, code):
         """
@@ -38,6 +58,7 @@ class ThemePlayer:
         """
         if code == self.error_sfx_pw:
             self.error_noise_on = not self.error_noise_on
+            self.log("(admin)", f"error sounds turned {'on' if self.error_noise_on else 'off'}")
             return
         elif code == self.spamblock_pw:  # if the code entered is the spamblock password
             print("Please the time in minutes:")
@@ -45,11 +66,13 @@ class ThemePlayer:
             time_inputted = input("> ")
             self.spamblock_time = time_inputted
             print(f"Spam block is now set to {time_inputted}")
+            self.log("(admin)", f"spam block set to {time_inputted} minutes")
             return
         elif code == self.spamblock_remaining_pw:
             print("Please enter the song you wish to query:")
 
             song_queried = input("> ")
+            self.log("(admin)", f"asked how long {song_queried} is spam-blocked for")
             spam_delta = timedelta(minutes=int(self.spamblock_time))
 
             try:
@@ -67,6 +90,7 @@ class ThemePlayer:
                 print("Never played.")
                 return
         else:
+            self.log("(admin)", "not an admin code")
             return
 
     def find(self, code):
@@ -79,6 +103,7 @@ class ThemePlayer:
             return
 
         if code == "exit":
+            self.log(code, "stopped the player")
             sys.exit()
 
         if code[0] == "*":
@@ -90,9 +115,11 @@ class ThemePlayer:
             print(f"Found {filepath}")
             if not self.is_spamblocked(code):
                 self.last_played[code] = datetime.now()
+                self.log(code, f"played {file_name(code)}")
                 self.play(filepath)
 
         else:
+            self.log(code, f"not found (there's no {file_name(code)})")
             if self.error_noise_on:
                 pygame.mixer.music.load('./media/not_found.mp3')
                 pygame.mixer.music.play()
@@ -110,6 +137,8 @@ class ThemePlayer:
                     pygame.mixer.music.load('./media/spamblock.mp3')
                     pygame.mixer.music.play()
                 print(f"Not gonna play! Spamblocker time remaining (hh:mm:ss): {spam_block_time_remaining}")
+                minutes = math.ceil(spam_block_time_remaining.total_seconds() / 60)
+                self.log(code, f"spam-blocked ({minutes} more minute{'s' if minutes != 1 else ''})")
                 return True
             else:
                 return False
